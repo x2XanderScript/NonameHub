@@ -1,0 +1,113 @@
+local Player = game:GetService("Players")
+local LocalPlayer = Player.LocalPlayer
+local Char = LocalPlayer.Character
+local Humanoid = Char.Humanoid
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local GuiService = game:GetService("GuiService")
+
+equipitem = function(v)
+if LocalPlayer.Backpack:FindFirstChild(v) then
+    local a = LocalPlayer.Backpack:FindFirstChild(v)
+        Humanoid:EquipTool(a)
+    end
+end
+
+
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "🐟FISH " .. Fluent.Version,
+    SubTitle = "by NonameHub",
+    TabWidth = 100,
+    Size = UDim2.fromOffset(340, 240),
+    Acrylic = true,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl
+})
+
+local Tabs = {
+    Main2 = Window:AddTab({ Title = "Main ( Soon )", Icon = "book" }),
+    Main = Window:AddTab({ Title = "AutoFisch", Icon = "anchor" })
+}
+
+local Options = Fluent.Options
+
+-- AutoCast Toggle
+local AutoCastToggle = Tabs.Main:AddToggle("AutoCast", {Title = "AutoCast", Default = false})
+AutoCastToggle:OnChanged(function(value)
+    _G.AutoCast = value
+     pcall(function()
+while _G.AutoCast do wait()
+    local Rod = Char:FindFirstChildOfClass("Tool")
+                task.wait(.01)
+                    Rod.events.cast:FireServer(100,1)
+        end
+    end)
+end)
+
+-- AutoShake Toggle
+local AutoShakeToggle = Tabs.Main:AddToggle("AutoShake", {Title = "AutoShake", Default = false})
+AutoShakeToggle:OnChanged(function(value)
+    _G.AutoShake = value
+pcall(function()
+while _G.AutoShake do wait()
+              task.wait(.01)
+                local PlayerGUI = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+                local shakeUI = PlayerGUI:FindFirstChild("shakeui")
+                if shakeUI and shakeUI.Enabled then
+                    local safezone = shakeUI:FindFirstChild("safezone")
+                    if safezone then
+                        local button = safezone:FindFirstChild("button")
+                        if button and button:IsA("ImageButton") and button.Visible then
+                                GuiService.SelectedObject = button
+                                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
+                                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+-- AutoReel Toggle
+local AutoReelToggle = Tabs.Main:AddToggle("AutoReel", {Title = "AutoReel", Default = false})
+AutoReelToggle:OnChanged(function(value)
+    _G.AutoReel = value
+pcall(function()
+    while _G.AutoReel do wait()
+            for i,v in pairs(LocalPlayer.PlayerGui:GetChildren()) do
+                if v:IsA "ScreenGui" and v.Name == "reel"then
+                    if v:FindFirstChild "bar" then
+                        wait(.01)
+                            ReplicatedStorage.events.reelfinished:FireServer(100,true)
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+-- Freeze Character Toggle
+local FreezeCharacterToggle = Tabs.Main:AddToggle("FreezeCharacter", {Title = "Freeze Character", Default = false})
+FreezeCharacterToggle:OnChanged(function(value)
+    Char.HumanoidRootPart.Anchored = value
+end)
+
+-- equipitem
+spawn(function()
+    while wait() do
+        if _G.AutoCast then
+            pcall(function()
+                for i,v in pairs(LocalPlayer.Backpack:GetChildren()) do
+                    if v:IsA ("Tool") and v.Name:lower():find("rod") then
+                    equipitem(v.Name)
+                    end
+                end
+            end)
+        end
+    end
+end)
+
