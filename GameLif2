@@ -1,0 +1,5 @@
+local Games = {
+  [16732694052] = "https://raw.githubusercontent.com/x2XanderScript/NonameHub/refs/heads/main/Fisch", -- Fisch
+}
+
+return Games
